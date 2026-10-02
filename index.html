@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mortgage Refinance Calculator | RefiCalc365</title>
+<meta name="description" content="Free mortgage refinance calculator. Compare current and proposed loan payments, monthly savings, closing-cost break-even time, interest, and cash-out effects.">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header><div class="wrap top"><a class="brand" href="index.html">RefiCalc365</a><nav><a href="#compare">Compare</a><a href="#breakeven">Break-Even</a><a href="#guide">Guide</a><a href="#faq">FAQ</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></div></header>
+<main class="wrap">
+<section class="hero"><p class="eyebrow">FREE MORTGAGE REFINANCE PLANNING TOOLS</p><h1>Mortgage Refinance Calculator</h1><p class="lead">Compare an existing mortgage with a proposed refinance and estimate payment changes, closing-cost break-even time, and simplified interest differences.</p></section>
+
+<section class="card" id="compare"><h2>1. Current Mortgage vs. Refinance</h2>
+<div class="cols">
+<div><h3>Current Mortgage</h3>
+<label>Remaining balance ($)<input id="balance" type="number" min="0" step="1000" value="300000"></label>
+<label>Current interest rate (%)<input id="oldRate" type="number" min="0" step=".01" value="7"></label>
+<label>Remaining term (years)<input id="oldYears" type="number" min="1" step="1" value="25"></label></div>
+<div><h3>Proposed Refinance</h3>
+<label>New interest rate (%)<input id="newRate" type="number" min="0" step=".01" value="6"></label>
+<label>New loan term (years)<input id="newYears" type="number" min="1" step="1" value="30"></label>
+<label>Closing costs paid/financed ($)<input id="costs" type="number" min="0" step="100" value="6000"></label>
+<label>Cash out added to new loan ($)<input id="cashout" type="number" min="0" step="100" value="0"></label>
+</div></div>
+<button onclick="compare()">Compare Loans</button><p class="error" id="error"></p>
+<div class="results">
+<div><span>Current principal & interest</span><strong id="oldPay">—</strong></div>
+<div><span>New principal & interest</span><strong id="newPay">—</strong></div>
+<div><span>Monthly payment difference</span><strong id="monthlySave">—</strong></div>
+<div><span>Estimated break-even</span><strong id="breakEven">—</strong></div>
+<div><span>New modeled loan amount</span><strong id="newBalance">—</strong></div>
+<div><span>Current remaining interest</span><strong id="oldInterest">—</strong></div>
+<div><span>New-loan interest</span><strong id="newInterest">—</strong></div>
+<div><span>New interest + entered closing costs</span><strong id="newCost">—</strong></div>
+</div>
+<p class="note">The payment comparison covers principal and interest only. Taxes, homeowners insurance, HOA dues, mortgage insurance, escrow changes, lender credits, prepaid items and other costs are not automatically included.</p></section>
+
+<section class="card" id="breakeven"><h2>2. Standalone Refinance Break-Even Calculator</h2><p>Already know your expected monthly savings? Estimate how long it would take those savings to equal your refinance costs.</p>
+<div class="grid"><label>Refinance costs ($)<input id="cost2" type="number" min="0" step="100" value="6000"></label><label>Expected monthly savings ($)<input id="save2" type="number" min="0" step="10" value="200"></label></div>
+<button onclick="breakCalc()">Calculate Break-Even</button><p class="error" id="error2"></p>
+<div class="results"><div><span>Break-even time</span><strong id="break2">—</strong></div><div><span>Months to break even</span><strong id="months2">—</strong></div></div></section>
+
+<section class="content" id="guide"><h2>Mortgage Refinance Guide</h2>
+<p>Refinancing replaces an existing mortgage with a new loan. A refinance can change the interest rate, monthly principal-and-interest payment, remaining payoff period, loan balance, or several of those items at once.</p>
+<h3>Payment Savings vs. Total Cost</h3><p>A lower monthly payment does not automatically mean a lower lifetime cost. Extending a loan over a new, longer term can reduce the required monthly payment while increasing the number of payments. Comparing both the monthly payment and the modeled interest over each remaining loan period provides more context.</p>
+<h3>Closing Costs</h3><p>Refinancing can involve lender charges, appraisal costs, title-related charges, recording costs, points, and other expenses. Some costs may be paid at closing, offset by lender credits, or added to the new loan balance. This calculator lets you enter one combined cost figure for planning purposes.</p>
+<h3>Break-Even Period</h3><p>A common simplified break-even calculation divides refinance costs by monthly payment savings. For example, $6,000 of costs divided by $200 of monthly savings equals 30 months. This measure is useful for comparison but does not capture every financial effect of refinancing.</p>
+<h3>Cash-Out Refinancing</h3><p>A cash-out refinance increases the amount borrowed so the borrower receives funds from home equity, subject to lender requirements. Because the additional borrowing changes the loan balance and interest expense, this calculator provides a separate cash-out field.</p>
+<h3>Term Changes</h3><p>Moving from a shorter remaining term to a new 30-year term can materially change both the payment and total interest. Conversely, choosing a shorter new term may increase the required payment even when the interest rate is lower.</p>
+<h3>Taxes and Insurance</h3><p>Property taxes and homeowners insurance generally are not reduced simply because a mortgage is refinanced. They are therefore excluded from the principal-and-interest comparison here.</p></section>
+
+<section class="content"><h2>Example Refinance</h2><p>Suppose $300,000 remains on a mortgage at 7% with 25 years remaining. The simplified principal-and-interest payment is about $2,120.34. Refinancing $300,000 at 6% for 30 years would produce a principal-and-interest payment of about $1,798.65 before considering closing costs or any amount added to the new loan.</p><p>If refinance costs were $6,000 and true monthly savings were $200, the simplified break-even period would be 30 months.</p></section>
+
+<section class="content"><h2>What This Calculator Does Not Decide</h2><p>Refinance decisions can depend on how long the borrower expects to keep the loan, closing costs, lender credits, points, tax circumstances, mortgage insurance, loan type, prepayment terms, cash-out needs, and alternatives. RefiCalc365 shows mathematical scenarios but does not label a refinance as a good or bad financial decision.</p></section>
+
+<section class="content" id="faq"><h2>Frequently Asked Questions</h2>
+<h3>What is mortgage refinancing?</h3><p>It is the process of replacing an existing mortgage with a new mortgage under new terms.</p>
+<h3>Does a lower rate always mean I save money?</h3><p>No. Closing costs, the new term, the amount borrowed, and how long the new loan remains outstanding can all affect total cost.</p>
+<h3>Why is the break-even calculation simplified?</h3><p>It compares entered costs with monthly payment savings. It does not model the time value of money, investment alternatives, tax effects, every fee, or changes in other housing costs.</p>
+<h3>What if the refinance payment is higher?</h3><p>The calculator reports the payment difference, but a traditional savings-based break-even period does not apply when the modeled new payment is not lower.</p>
+<h3>Does this include an appraisal or title fees automatically?</h3><p>No. Enter the refinance costs you want included in your scenario.</p>
+<h3>Is RefiCalc365 a lender or mortgage broker?</h3><p>No. It is an independent educational calculator and does not make, arrange, approve, or recommend mortgage loans.</p></section>
+
+<section class="content"><h2>About RefiCalc365</h2><p>RefiCalc365 is a free educational mortgage-refinance utility. Results are estimates based on the figures entered by the user and are not loan quotes or individualized financial advice.</p></section>
+</main>
+<footer><div class="wrap"><p>Educational estimates only. Review official lender disclosures and your actual mortgage terms before making a refinancing decision.</p><p class="creator">Created by James Gore</p><p><a href="index.html">Calculators</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a></p><p>© 2026 RefiCalc365</p></div></footer>
+<script src="script.js"></script></body></html>

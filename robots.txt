@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://reficalc365.com/sitemap.xml
