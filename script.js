@@ -18,3 +18,44 @@
   listen('ltv',()=>{let p=number('ltvLoan'),v=number('ltvValue');if(!positive(v)||!valid(p)||p<0)throw Error();show('ltvResult',`Estimated LTV: <strong>${pct(p/v*100)}</strong><br>Estimated equity: <strong>${fmt(v-p)}</strong>. Lender valuation may differ.`);});
   if($('comparison'))$('comparison').requestSubmit();
 })();
+
+/* Refinance offer comparison: independent, same-horizon amortization */
+(()=>{
+ const f=document.getElementById('offerForm');if(!f)return;
+ const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+ let csv='';
+ const loan=(principal,annual,term,horizon)=>{
+  const r=annual/1200,n=term,scheduled=r===0?principal/n:principal*r/(1-Math.pow(1+r,-n));
+  let bal=principal,totalInterest=0,totalPaid=0,rows=[];
+  for(let m=1;m<=horizon;m++){
+   const interest=bal*r,pay=bal>0?Math.min(scheduled,bal+interest):0,principalPaid=pay-interest;
+   bal=Math.max(0,bal-principalPaid);totalInterest+=interest;totalPaid+=pay;
+   rows.push({month:m,pay,interest,principal:principalPaid,balance:bal});
+  }
+  return {scheduled,totalInterest,totalPaid,balance:bal,rows};
+ };
+ const quote=(prefix,hasCosts)=>{
+  const principal=Number($(prefix+'Balance').value),rate=Number($(prefix+'Rate').value),term=Number($(prefix+'Months').value),costs=hasCosts?Number($(prefix+'Costs').value):0;
+  if(![principal,rate,term,costs].every(Number.isFinite)||principal<=0||rate<0||rate>50||!Number.isInteger(term)||term<1||term>600||costs<0)throw Error('Enter valid loan amounts, rates, months and costs.');
+  return {principal,rate,term,costs};
+ };
+ const esc=v=>'"'+String(v).replaceAll('"','""')+'"';
+ f.addEventListener('submit',e=>{
+  e.preventDefault();try{
+   const hold=Number($('ocHold').value);if(!Number.isInteger(hold)||hold<1||hold>600)throw Error('Holding period must be 1–600 whole months.');
+   const inputs=[quote('oc',false),quote('oa',true),quote('ob',true)];
+   const results=inputs.map(q=>({...q,...loan(q.principal,q.rate,q.term,hold)}));
+   const row=(name,fn)=>'<tr><th scope="row">'+name+'</th>'+results.map(x=>'<td>'+fn(x)+'</td>').join('')+'</tr>';
+   $('offerTable').innerHTML=row('Scheduled monthly P&I',x=>money(x.scheduled))+row('Interest paid in holding period',x=>money(x.totalInterest))+row('Upfront costs',x=>money(x.costs))+row('Interest + upfront costs',x=>money(x.totalInterest+x.costs))+row('Principal paid in period',x=>money(x.totalPaid-x.totalInterest))+row('Balance still owed',x=>money(x.balance));
+   const cheapest=Math.min(...results.map(x=>x.totalInterest+x.costs));
+   $('offerResult').textContent='Lowest interest-plus-upfront-cost estimate over '+hold+' months: '+['Keep current','Offer A','Offer B'][results.findIndex(x=>Math.abs(x.totalInterest+x.costs-cheapest)<0.000001)]+'. Review remaining balance and monthly affordability before deciding.';
+   const header=['Month',...['Current','Offer A','Offer B'].flatMap(n=>[n+' payment',n+' interest',n+' principal',n+' remaining balance'])];
+   const data=[header,...Array.from({length:hold},(_,i)=>[i+1,...results.flatMap(x=>{const v=x.rows[i];return [v.pay,v.interest,v.principal,v.balance].map(z=>z.toFixed(2));})])];
+   csv=data.map(r=>r.map(esc).join(',')).join('\r\n');$('downloadOffer').disabled=false;
+  }catch(err){$('offerResult').textContent=err.message;$('offerTable').textContent='';$('downloadOffer').disabled=true;csv='';}
+ });
+ $('downloadOffer').addEventListener('click',()=>{
+  if(!csv)return;const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='reficalc365-offer-comparison.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ });
+ f.requestSubmit();
+})();
